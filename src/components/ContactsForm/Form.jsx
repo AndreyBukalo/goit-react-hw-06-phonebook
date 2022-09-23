@@ -1,31 +1,26 @@
 import { FormStyle, Label, Input, Btn } from './Form.styled';
-import { useState } from 'react';
-import { nanoid } from 'nanoid';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from 'redux/contactsSlice';
+import { getContacts } from 'redux/selectors';
 
-export const UserForm = ({ onSubmit }) => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-
-  const onChange = event => {
-    const { name, value } = event.target;
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-      case 'number':
-        setNumber(value);
-        break;
-      default:
-        break;
-    }
-  };
+export const UserForm = () => {
+  const dispatch = useDispatch();
+  const checkContacts = useSelector(getContacts);
 
   const handleSubmit = event => {
     event.preventDefault();
-    const id = nanoid();
-    onSubmit({ id, name, number });
-    setName('');
-    setNumber('');
+    const form = event.target;
+    const formName = event.target.elements.name.value;
+    const formNumber = event.target.elements.number.value;
+    if (
+      checkContacts.find(
+        cont => cont.name.toLowerCase() === formName.toLowerCase()
+      )
+    ) {
+      return alert(`${formName} is already in contacts`);
+    }
+    dispatch(addContact(formName, formNumber));
+    form.reset();
   };
 
   return (
@@ -33,8 +28,6 @@ export const UserForm = ({ onSubmit }) => {
       <Label htmlFor="name">
         Name
         <Input
-          value={name}
-          onChange={onChange}
           type="text"
           name="name"
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
@@ -46,8 +39,6 @@ export const UserForm = ({ onSubmit }) => {
       <Label htmlFor="number">
         Number
         <Input
-          value={number}
-          onChange={onChange}
           type="tel"
           name="number"
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"

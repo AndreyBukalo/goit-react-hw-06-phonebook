@@ -1,7 +1,14 @@
 import { Label, Input } from './Filter.styled';
 import { Box } from 'components/Box';
+import { setFilter } from 'redux/filterSlice';
+import { useDispatch } from 'react-redux';
 
-export const Filter = ({ onChange }) => {
+export const Filter = () => {
+  const dispatch = useDispatch();
+  const onChange = event => {
+    const filtred = event.target.value;
+    dispatch(setFilter(filtred));
+  };
   return (
     <Box display="flex" pl="30px">
       <Label>
